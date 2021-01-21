@@ -9,6 +9,7 @@ from gpt2_model import *
 _ROOT = os.path.abspath(os.path.dirname(__file__))
 LOG_DIR = _ROOT + "/log"
 MODEL_DIR = _ROOT + "/model"
+DATA_DIR = _ROOT + "/data"
 
 
 @click.command()
@@ -37,7 +38,7 @@ def train(num_layers, embedding_size, num_heads, dff, max_seq_len, vocab_size,
     with open(MODEL_DIR + '/model_par.json', 'w') as f:
         json.dump(par_map, f)
 
-    tf_records = glob.glob((_ROOT + "/data/tf_records/*.tfrecord"))
+    tf_records = glob.glob((DATA_DIR + "/tf_records/*.tfrecord"))
     train_percent = int(len(tf_records) * (85 / 100))
 
     print("No. of tf records:- ", len(tf_records))
