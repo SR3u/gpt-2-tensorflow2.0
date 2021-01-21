@@ -2,6 +2,7 @@ import csv
 import datetime
 import glob
 import os
+import re
 from collections import Counter
 
 import click
@@ -20,13 +21,18 @@ BOS_ID = 3
 EOS_ID = 4
 
 
+def line_filter(line):
+    return not re.match(".*\\[.*]", line.strip())
+
+
 def process_text(text_files):
     print("Pre-processing the text data.....")
     file_writer = open(PROCESS_DATA_PATH, "w")
     for file_name in tqdm.tqdm(text_files):
         fr = open(file_name, 'r')
-        file_writer.writelines([fix_text(line, normalization='NFKC') for line in fr.readlines()])
-        fr.close
+        #file_writer.writelines([fix_text(line, normalization='NFKC') for line in fr.readlines()])
+        file_writer.writelines(filter(line_filter, [fix_text(line, normalization='NFKC') for line in fr.readlines()]))
+        fr.close()
     file_writer.close()
 
 
@@ -95,6 +101,7 @@ def create_tf_records(min_seq_len, max_seq_len, per_file_limit=5000):
 def train(data_dir, vocab_size, min_seq_len, max_seq_len):
     # text_files = glob.glob((_ROOT + data_dir + "/*.txt"))
     text_files = glob.glob((data_dir + "/*.txt"))
+    text_files.extend(glob.glob((data_dir + "/*.pgn")))
     # print(text_files)
     process_text(text_files)
     train_byte_pair_encoding(vocab_size)
