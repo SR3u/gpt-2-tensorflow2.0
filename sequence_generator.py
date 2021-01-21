@@ -1,3 +1,5 @@
+import sys
+
 import click
 
 from sample import SequenceGenerator
@@ -12,10 +14,12 @@ from sample import SequenceGenerator
 @click.option('--top-k', type=int, default=8, show_default=True, help="seq_len")
 @click.option('--top-p', type=float, default=0.9, show_default=True, help="seq_len")
 @click.option('--nucleus_sampling', type=bool, default=False, show_default=True, help="seq_len")
-@click.option('--context', type=str, default="sample context", show_default=True, help="Context given to model")
+@click.option('--context', type=str, default=None, show_default=True, help="Context given to model")
 def seq_gen(model_path, model_param, vocab, seq_len, temperature, top_k, top_p, nucleus_sampling, context):
     sg = SequenceGenerator(model_path, model_param, vocab)
     sg.load_weights()
+    if context is None:
+        context = input("Context: ")
     generated_seq = sg.sample_sequence(context,
                                        seq_len=seq_len,
                                        temperature=temperature,
